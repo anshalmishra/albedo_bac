@@ -1,0 +1,10 @@
+{
+    "apps" : [
+      {
+        "name"      : "api",
+        "script"    : "npm run start",
+        "interpreter": "none",
+        "args": "serve -p 8443 -T"
+      }
+    ]
+  }
