@@ -470,7 +470,8 @@ router.post('/api/addUser', function (req, res, next) {
                 } else {
                   var transporter = nodemailer.createTransport({
                     host: 'smtp.gmail.com',
-                    port: 465,
+                    port: 587,
+                    secure: false,
                     auth: {
                       //user: 'foodonlineimca@gmail.com',
                       user: 'atgenx@gmail.com',
@@ -483,9 +484,7 @@ router.post('/api/addUser', function (req, res, next) {
                     from: 'atgenx@gmail.com',
                     to: userInfo.email,
                     subject: 'Welcome to albedo',
-                    text:
-                      'Your temporary password is:  ' +
-                      userInfo.pwd,
+                    text: 'Your temporary password is:  ' + userInfo.pwd,
                   };
 
                   transporter.sendMail(mailOptions, function (error, info) {
