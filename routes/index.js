@@ -469,24 +469,27 @@ router.post('/api/addUser', function (req, res, next) {
                   }
                 } else {
                   var transporter = nodemailer.createTransport({
-                    host: 'smtp.yandex.com',
+                    host: 'smtp.gmail.com',
                     port: 465,
                     auth: {
                       //user: 'foodonlineimca@gmail.com',
-                      user: 'support@atgenx.com',
+                      user: 'atgenx@gmail.com',
                       //pass: 'imca@123'
                       pass: '@genX2021',
                     },
                   });
 
                   var mailOptions = {
-                    from: 'support@atgenx.com',
+                    from: 'atgenx@gmail.com',
                     to: userInfo.email,
                     subject: 'Welcome to albedo',
-                    text: 'Your temporary password is: ' + userInfo.pwd,
+                    text:
+                      'Your temporary password is:  ' +
+                      userInfo.pwd,
                   };
 
                   transporter.sendMail(mailOptions, function (error, info) {
+                    console.log(error);
                     if (error) {
                       console.log('Error' + error);
                       res.json({ message: 'Email error', status: 1 });
