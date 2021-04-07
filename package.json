@@ -13,6 +13,7 @@
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "express-fileupload": "^1.2.0",
+    "googleapis": "^70.0.0",
     "hbs": "~4.0.4",
     "http-errors": "~1.6.3",
     "moment": "^2.29.0",
@@ -24,5 +25,8 @@
     "nodemon": "^2.0.4",
     "path": "^0.12.7",
     "read-excel-file": "^4.0.7"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
   }
 }

@@ -17,7 +17,10 @@ var ObjectID = require('mongodb').ObjectID;
 var fs = require('fs');
 var multer = require('multer');
 const xlsxFile = require('read-excel-file/node');
+require('dotenv').config();
 var nodemailer = require('nodemailer');
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
 const moment = require('moment');
 const { stringify } = require('querystring');
 
@@ -468,34 +471,153 @@ router.post('/api/addUser', function (req, res, next) {
                     res.json({ message: 'Save Error', status: 1 });
                   }
                 } else {
-                  var transporter = nodemailer.createTransport({
-                    host: 'smtp.gmail.com',
-                    port: 587,
-                    secure: false,
-                    auth: {
-                      //user: 'foodonlineimca@gmail.com',
-                      user: 'atgenx@gmail.com',
-                      //pass: 'imca@123'
-                      pass: '@genX2021',
-                    },
+                  const clientId = '438648115554-tscqb14rcunjp9c821bmbveh95mmipvb.apps.googleusercontent.com';
+                  const secret = 'LYZQF5rIq536pBGu_kHKIqY7';
+                  const email = 'atgenx@gmail.com';
+                  const oauth2Client = new OAuth2(
+                      clientId,
+                      secret,
+                      "https://developers.google.com/oauthplayground"
+                  );
+                  const refreshToken = '1//04hjZ0D5Ujv7wCgYIARAAGAQSNwF-L9Irxl_WaMyf7bEA0Y3RSh-HN2uEaPSGp2Xcy1raaTiKtbHSNGW-LNl_yIDCS96ZvljBcm8';
+
+                  oauth2Client.setCredentials({
+                    refresh_token: refreshToken
                   });
 
-                  var mailOptions = {
-                    from: 'atgenx@gmail.com',
-                    to: userInfo.email,
-                    subject: 'Welcome to albedo',
-                    text: 'Your temporary password is:  ' + userInfo.pwd,
-                  };
 
-                  transporter.sendMail(mailOptions, function (error, info) {
-                    console.log(error);
-                    if (error) {
-                      console.log('Error' + error);
-                      res.json({ message: 'Email error', status: 1 });
-                    } else {
-                      res.json({ message: 'User added', status: 0 });
+
+
+                  async function sendMail() {
+                    try {
+                      const accessToken = await oauth2Client.getAccessToken();
+
+                      const transport = nodemailer.createTransport({
+                        service: 'gmail',
+                        auth: {
+                          type: 'OAuth2',
+                          user: email,
+                          clientId: clientId,
+                          clientSecret: secret,
+                          refreshToken: '1//04hjZ0D5Ujv7wCgYIARAAGAQSNwF-L9Irxl_WaMyf7bEA0Y3RSh-HN2uEaPSGp2Xcy1raaTiKtbHSNGW-LNl_yIDCS96ZvljBcm8',
+                          accessToken: accessToken,
+                        },
+                      });
+
+                      const mailOptions = {
+                        from: email,
+                        to: userInfo.email,
+                        subject: 'Welcome to Albedo',
+                        text: 'Your temporary password is:  ' + userInfo.pwd,
+                        html: '<h1>Welcome to Albedo</h1>',
+                      };
+                      const result = await transport.sendMail(mailOptions);
+                      return result;
+                    } catch (error) {
+                      return error;
                     }
-                  });
+                  }
+
+                  sendMail()
+                      .then((result) => {
+                        console.log('Email sent...', result);
+                        res.json({ message: 'User added', status: 0 });
+                      }
+
+                      )
+                      .catch((error) => {
+                        console.log(error.message);
+                        res.json({ message: 'Email error', status: 1 });
+                      });
+
+
+
+                  // const createTransporter = async () => {
+                  //   const oauth2Client = new OAuth2(
+                  //       process.env.CLIENT_ID,
+                  //       process.env.CLIENT_SECRET,
+                  //       "https://developers.google.com/oauthplayground"
+                  //   );
+                  //
+                  //   oauth2Client.setCredentials({
+                  //     refresh_token: process.env.REFRESH_TOKEN
+                  //   });
+                  //
+                  // }
+
+                  //   const accessToken = await new Promise((resolve, reject) => {
+                  //     oauth2Client.getAccessToken((err, token) => {
+                  //       if(err) {
+                  //         reject();
+                  //       }
+                  //       resolve(token);
+                  //     });
+                  //   });
+                  //
+                  //   const transporter = nodemailer.createTransport({
+                  //     service: "gmail",
+                  //     host: 'smtp.gmail.com',
+                  //     port: 465,
+                  //     secure: true,
+                  //     auth: {
+                  //       type: "OAuth2",
+                  //       user: process.env.EMAIL,
+                  //       accessToken,
+                  //       clientId: process.env.CLIENT_ID,
+                  //       clientSecret: process.env.CLIENT_SECRET,
+                  //       refreshToken: process.env.REFRESH_TOKEN
+                  //     }
+                  //   });
+                  //
+                  //   return transporter;
+                  // };
+                  //
+                  // const sendEmail = async (emailOptions) => {
+                  //   let emailTransporter = await createTransporter();
+                  //   await emailTransporter.sendMail(emailOptions);
+                  // };
+                  //
+                  // sendEmail({
+                  //   from: process.env.EMAIL,
+                  //   to: userInfo.email,
+                  //   subject: 'Welcome to Albedo',
+                  //   text: 'Your temporary password is:  ' + userInfo.pwd,
+                  // }, (err) => {
+                  //   console.log("From Mail");
+                  //   console.log(err);
+                  // });
+
+
+
+
+                  // var transporter = nodemailer.createTransport({
+                  //   host: 'smtp.gmail.com',
+                  //   port: 587,
+                  //   secure: false,
+                  //   auth: {
+                  //     //user: 'foodonlineimca@gmail.com',
+                  //     user: 'atgenx@gmail.com',
+                  //     //pass: 'imca@123'
+                  //     pass: '@genX2021',
+                  //   },
+                  // });
+
+                  // var mailOptions = {
+                  //   from: 'atgenx@gmail.com',
+                  //   to: userInfo.email,
+                  //   subject: 'Welcome to albedo',
+                  //   text: 'Your temporary password is:  ' + userInfo.pwd,
+                  // };
+
+                  // transporter.sendMail(mailOptions, function (error, info) {
+                  //   console.log(error);
+                  //   if (error) {
+                  //     console.log('Error' + error);
+                  //     res.json({ message: 'Email error', status: 1 });
+                  //   } else {
+                  //     res.json({ message: 'User added', status: 0 });
+                  //   }
+                  // });
                 }
               });
             }
