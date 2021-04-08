@@ -509,7 +509,7 @@ router.post('/api/addUser', function (req, res, next) {
                         to: userInfo.email,
                         subject: 'Welcome to Albedo',
                         text: 'Your temporary password is:  ' + userInfo.pwd,
-                        html: '<h1>Welcome to Albedo</h1>',
+                        html: `<h3>Welcome to Albedo</h3><p>Your temporary password is: <b>${userInfo.pwd}</b></p>`,
                       };
                       const result = await transport.sendMail(mailOptions);
                       return result;
